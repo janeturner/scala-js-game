@@ -10,77 +10,30 @@ import org.scalajs.dom.raw.HTMLImageElement
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExportTopLevel
 import tutorial.webapp.Color._
+import tutorial.webapp.Obstacle
+
+import scala.collection.mutable.ArrayBuffer
 
 
 object TutorialApp {
   def main(args: Array[String]): Unit = {
     createGame()
   }
-// start of practice code
 
-//  class Game() {
-//    val canvas = dom.document.createElement("canvas").asInstanceOf[Canvas]
-//    val ctx = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
-//    canvas.width = 600
-//    canvas.height = 400
-//
-//
-//    def clear() = {
-//      this.ctx.clearRect(0, 0, canvas.width, canvas.height)
-//    }
-//
-//    def start(): Unit = {
-//      dom.document.body.appendChild(canvas)
-//      js.timers.setInterval(28) {
-//        updateGameArea()
-//      }
-//    }
-//  }
-//
-//  class Component(x: Int, y: Int, width: Int, height: Int, colour: String) {
-//    var pieceX = this.x
-//
-//    val ctx = myGameArea.ctx
-//
-//    def update() {
-//      ctx.fillStyle = colour
-//      ctx.fillRect(pieceX, y, width, height)
-//    }
-//  }
-//  val myGameArea = new Game()
-//  val myGamePiece = new Component(10, 120, 30, 30, Red)
-//
-//  def updateGameArea(): Unit = {
-//    myGameArea.clear()
-//    myGamePiece.update()
-//
-//  }
-//
-//  def startGame(): Unit = {
-//    myGameArea.start()
-//    myGamePiece.update()
-//    myGamePiece.pieceX += 5
-//  }
-//}
-
-  // end of practice code
   def createGame() = {
 
     var playerX = 100
     var playerY = 190
 
-
-    var obstacleX = 590
-    var obstacleY = 200
-    var obstacleSpeed = 3
-
     val canvas = dom.document.createElement("canvas").asInstanceOf[Canvas]
     val ctx = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
     val bgImage = new Image("images/background.png")
 
+    //val obstacle = Obstacle(ctx)
+    val obstacles = new Obstacles(ctx)
+
     canvas.width = 600
     canvas.height = 400
-
 
     dom.document.body.appendChild(canvas)
 
@@ -95,25 +48,14 @@ object TutorialApp {
       //drawRect(playerX, playerY, 15, 15, Blue)
 
       //draw obstacle
-      drawRect(obstacleX, obstacleY, 30, 30, Magenta)
-
-
-    }
-
-    def drawRect(x: Double, y: Double, width: Int, height: Int, colour: String) = {
-      ctx.fillStyle = colour
-      ctx.fillRect(x, y, width, height)
-    }
-
-    def moveThings(): Unit = {
-      obstacleX -= obstacleSpeed
+      obstacles.draw()
     }
 
     def crash(): Unit = {
       // println(s"$playerX $obstacleX")
 
-      if ((playerX + 100) > obstacleX && playerX < obstacleX && (playerY + 100) > obstacleY && playerY < obstacleY) {
-        obstacleSpeed = 0
+      if (obstacles.isCollision(playerX, playerY)) {
+        obstacles.stop()
         // drawRect(0, 0, canvas.width, canvas.height, Black)
         ctx.drawImage(bgImage.element, 0, 0, canvas.width, canvas.height)
         ctx.fillStyle = Black
@@ -123,16 +65,10 @@ object TutorialApp {
       }
     }
 
-    class Component(x: Int, y: Int, width: Int, height: Int, colour: String) {
-      def draw() {
-        drawRect(x, y, width, height, colour)
-      }
-    }
-
 
     js.timers.setInterval(28) {
       drawThings()
-      moveThings()
+      obstacles.move()
       crash()
     }
 
@@ -151,4 +87,53 @@ object TutorialApp {
 
 
   }
+
+  // start of practice code
+
+  //  class Game() {
+  //    val canvas = dom.document.createElement("canvas").asInstanceOf[Canvas]
+  //    val ctx = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
+  //    canvas.width = 600
+  //    canvas.height = 400
+  //
+  //
+  //    def clear() = {
+  //      this.ctx.clearRect(0, 0, canvas.width, canvas.height)
+  //    }
+  //
+  //    def start(): Unit = {
+  //      dom.document.body.appendChild(canvas)
+  //      js.timers.setInterval(28) {
+  //        updateGameArea()
+  //      }
+  //    }
+  //  }
+  //
+  //  class Component(x: Int, y: Int, width: Int, height: Int, colour: String) {
+  //    var pieceX = this.x
+  //
+  //    val ctx = myGameArea.ctx
+  //
+  //    def update() {
+  //      ctx.fillStyle = colour
+  //      ctx.fillRect(pieceX, y, width, height)
+  //    }
+  //  }
+  //  val myGameArea = new Game()
+  //  val myGamePiece = new Component(10, 120, 30, 30, Red)
+  //
+  //  def updateGameArea(): Unit = {
+  //    myGameArea.clear()
+  //    myGamePiece.update()
+  //
+  //  }
+  //
+  //  def startGame(): Unit = {
+  //    myGameArea.start()
+  //    myGamePiece.update()
+  //    myGamePiece.pieceX += 5
+  //  }
+  //}
+
+  // end of practice code
 }
